@@ -34,7 +34,7 @@ class AddClient extends Component {
 
     firestore
       .add({ collection: 'clients' }, newClient)
-      .then(history.push('/'))
+      .then(() => history.push('/'))
   }
 
   renderFormGroup(name, label, type = 'text', step = null) {

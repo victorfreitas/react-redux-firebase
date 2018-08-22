@@ -56,7 +56,7 @@ class EditClient extends Component {
 
     firestore
       .update({ collection, doc: client.id }, newClient)
-      .then(history.push('/'))
+      .then(() => history.push('/'))
   }
 
   render() {

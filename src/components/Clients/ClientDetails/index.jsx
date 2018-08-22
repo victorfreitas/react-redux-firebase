@@ -58,7 +58,7 @@ class ClientDetails extends Component {
 
     firestore
       .delete({ collection, doc: client.id })
-      .then(history.push('/'))
+      .then(() => history.push('/'))
   }
 
   renderBalanceForm() {
