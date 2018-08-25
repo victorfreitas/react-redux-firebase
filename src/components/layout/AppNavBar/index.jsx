@@ -5,6 +5,8 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { firebaseConnect } from 'react-redux-firebase'
 
+import './style.css'
+
 class AppNavBar extends Component {
   constructor(props) {
     super(props)
@@ -18,6 +20,47 @@ class AppNavBar extends Component {
     return { isAuthenticated: !!auth.uid }
   }
 
+  handleLogout = (event) => {
+    event.preventDefault()
+
+    const { firebase } = this.props
+
+    firebase.logout()
+  }
+
+  renderNavItems() {
+    const { isAuthenticated } = this.state
+    const { auth } = this.props
+
+    if (!isAuthenticated) {
+      return null
+    }
+
+    return (
+      <div className="collapse navbar-collapse" id="navbar-main">
+        <ul className="navbar-nav mr-auto">
+          <li className="nav-item">
+            <Link to="/" className="nav-link">
+              Dashboard
+            </Link>
+          </li>
+        </ul>
+        <ul className="navbar-nav ml-auto">
+          <li className="nav-item">
+            <a className="nav-link">
+              {auth.email}
+            </a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link logout-link" onClick={this.handleLogout}>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    )
+  }
+
   render() {
     return (
       <nav className="navbar navbar-expand-md navbar-dark bg-primary mb-4">
@@ -25,7 +68,6 @@ class AppNavBar extends Component {
           <Link to="/" className="navbar-brand">
             ClientPanel
           </Link>
-
           <button
             type="button"
             data-toggle="collapse"
@@ -34,16 +76,7 @@ class AppNavBar extends Component {
           >
             <span className="navbar-toggler-icon" />
           </button>
-
-          <div className="collapse navbar-collapse" id="navbar-main">
-            <ul className="navbar-nav mr-auto">
-              <li className="nav-item">
-                <Link to="/" className="nav-link">
-                  Dashboard
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {this.renderNavItems()}
         </div>
       </nav>
     )

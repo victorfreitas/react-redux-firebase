@@ -1,10 +1,15 @@
 import React, { Component } from 'react'
-// import { compose } from 'redux'
-// import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
+import { compose } from 'redux'
+import { connect } from 'react-redux'
 import { firebaseConnect } from 'react-redux-firebase'
+import PropTypes from 'prop-types'
 
 import './style.css'
+
+import Alert from '../../layout/Alert'
+import Spinner from '../../layout/Spinner'
+
+import { setNotify } from '../../../actions'
 
 class Login extends Component {
   constructor(props) {
@@ -13,6 +18,7 @@ class Login extends Component {
     this.state = {
       email: '',
       password: '',
+      wait: false,
     }
   }
 
@@ -23,17 +29,44 @@ class Login extends Component {
   handleSubmit = (event) => {
     event.preventDefault()
 
-    const { firebase, history } = this.props
+    const { firebase, history, setNotify } = this.props
     const { email, password } = this.state
 
+    this.setState({ isWait: true })
+
     firebase
-      .login({ email, password })
-      .then(() => history.push('/'))
-      .catch(() => console.error('Invalid login credentials'))
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        this.setState({ isWait: false })
+        setNotify({ message: null, messageType: null })
+        history.push('/')
+      })
+      .catch(err => {
+        this.setState({ isWait: false })
+        setNotify({
+          message: err.message,
+          messageType: 'danger',
+        })
+      })
+  }
+
+  renderNotify() {
+    const { notify } = this.props
+
+    if (!notify.message) {
+      return null
+    }
+
+    return <Alert {...notify} />
   }
 
   render() {
-    const { email, password } = this.state
+    const { email, password, isWait } = this.state
+
+    if (isWait) {
+      return <Spinner />
+    }
 
     return (
       <div className="row login">
@@ -45,6 +78,8 @@ class Login extends Component {
                   <i className="fa fa-lock" /> Login
                 </span>
               </h1>
+
+              {this.renderNotify()}
 
               <form onSubmit={this.handleSubmit}>
                 <div className="form-group">
@@ -96,6 +131,19 @@ class Login extends Component {
 
 Login.propTypes = {
   firebase: PropTypes.object.isRequired,
+  setNotify: PropTypes.func.isRequired,
+  notify: PropTypes.object.isRequired,
 }
 
-export default firebaseConnect()(Login)
+const mapStateToProps = state => ({
+  notify: state.notify,
+})
+
+const mapDispatchToProps = {
+  setNotify,
+}
+
+export default compose(
+  firebaseConnect(),
+  connect(mapStateToProps, mapDispatchToProps)
+)(Login)
