@@ -8,31 +8,17 @@ import { firebaseConnect } from 'react-redux-firebase'
 import './style.css'
 
 class AppNavBar extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      isAuthenticated: false,
-    }
-  }
-
-  static getDerivedStateFromProps({ auth }) {
-    return { isAuthenticated: !!auth.uid }
-  }
-
   handleLogout = (event) => {
     event.preventDefault()
 
     const { firebase } = this.props
-
     firebase.logout()
   }
 
   renderNavItems() {
-    const { isAuthenticated } = this.state
     const { auth } = this.props
 
-    if (!isAuthenticated) {
+    if (!auth.uid) {
       return null
     }
 

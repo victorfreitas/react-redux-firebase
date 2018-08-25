@@ -31,6 +31,7 @@ class AddClient extends Component {
     }
 
     newClient.balance = parseFloat(newClient.balance)
+    newClient.createdAt = firestore.FieldValue.serverTimestamp()
 
     firestore
       .add({ collection: 'clients' }, newClient)
