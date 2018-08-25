@@ -1,65 +1,71 @@
 import React, { Component, Fragment } from 'react'
+
+import { compose } from 'redux'
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
 import PropTypes from 'prop-types'
 
-class AddClient extends Component {
+import { clientsCollection as collection } from '../../../../environments'
+import Spinner from '../../../layout/Spinner'
+
+class EditClient extends Component {
   constructor(props) {
     super(props)
-
-    this.state = {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      balance: '',
-    }
+    this.state = {}
   }
 
   handleChange = ({ target }) => {
     this.setState({ [target.name]: target.value })
   }
 
+  renderFormGroup(name, label, type = 'text', step = null) {
+    const { client } = this.props
+
+    return (
+      <div className="form-group">
+        <label htmlFor={name}>
+          {label}
+        </label>
+        <input
+          type={type}
+          className="form-control"
+          name={name}
+          placeholder={`Enter your ${label.toLowerCase()}`}
+          onChange={this.handleChange}
+          defaultValue={client[name]}
+          step={step}
+        />
+      </div>
+    )
+  }
+
   handleSubmit = (event) => {
     event.preventDefault()
 
-    const newClient = { ...this.state }
-    const { firestore, history } = this.props
+    const { client, firestore, history } = this.props
+    const newClient = { ...client, ...this.state }
+
+    delete newClient.id
 
     if (!newClient.balance) {
       newClient.balance = 0
     }
 
     newClient.balance = parseFloat(newClient.balance)
-    newClient.createdAt = firestore.FieldValue.serverTimestamp()
 
     firestore
-      .add({ collection: 'clients' }, newClient)
+      .update({ collection, doc: client.id }, newClient)
       .then(() => history.push('/'))
   }
 
-  renderFormGroup(name, label, type = 'text', step = null) {
-    const state = { ...this.state }
-
-    return (
-        <div className="form-group">
-          <label htmlFor={name}>
-            {label}
-          </label>
-          <input
-            type={type}
-            className="form-control"
-            name={name}
-            placeholder={`Enter your ${label.toLowerCase()}`}
-            onChange={this.handleChange}
-            value={state[name]}
-            step={step}
-          />
-        </div>
-    )
-  }
-
   render() {
+    const { client } = this.props
+
+    if (!client) {
+      return <Spinner />
+    }
+
     return (
       <Fragment>
         <div className="row">
@@ -72,7 +78,7 @@ class AddClient extends Component {
 
         <div className="card">
           <div className="card-header">
-            Add Client
+            Edit Client
           </div>
           <div className="card-body">
             <form autoComplete="off" onSubmit={this.handleSubmit}>
@@ -95,8 +101,25 @@ class AddClient extends Component {
   }
 }
 
-AddClient.propTypes = {
-  firebase: PropTypes.object.isRequired,
+EditClient.propTypes = {
+  firestore: PropTypes.object.isRequired,
+  client: PropTypes.shape({
+    id: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    phone: PropTypes.string,
+    balance: PropTypes.number,
+  }),
 }
 
-export default firestoreConnect()(AddClient)
+export default compose(
+  firestoreConnect(({ match: { params } }) => [{
+    collection,
+    storeAs: 'client',
+    doc: params.id,
+  }]),
+  connect(({ firestore: { ordered } }) => ({
+    client: ordered.client && ordered.client[0],
+  }))
+)(EditClient)

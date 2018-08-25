@@ -38,6 +38,11 @@ class AppNavBar extends Component {
             </a>
           </li>
           <li className="nav-item">
+            <Link to="/settings" className="nav-link">
+              Settings
+            </Link>
+          </li>
+          <li className="nav-item">
             <a className="nav-link logout-link" onClick={this.handleLogout}>
               Logout
             </a>

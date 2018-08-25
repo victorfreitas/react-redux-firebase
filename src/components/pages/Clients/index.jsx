@@ -5,9 +5,9 @@ import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
 import PropTypes from 'prop-types'
 
-import Spinner from '../layout/Spinner'
+import Spinner from '../../layout/Spinner'
 
-import { formatAmount } from '../../helpers'
+import { formatAmount } from '../../../helpers'
 
 class Clients extends Component {
   constructor(props) {

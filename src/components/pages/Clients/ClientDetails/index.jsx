@@ -6,9 +6,9 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 
-import Spinner from '../../layout/Spinner'
-import { formatAmount } from '../../../helpers'
-import { clientsCollection as collection } from '../../../environments'
+import Spinner from '../../../layout/Spinner'
+import { formatAmount } from '../../../../helpers'
+import { clientsCollection as collection } from '../../../../environments'
 
 class ClientDetails extends Component {
   constructor(props) {
