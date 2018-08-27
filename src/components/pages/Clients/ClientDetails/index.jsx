@@ -8,7 +8,7 @@ import classNames from 'classnames'
 
 import Spinner from '../../../layout/Spinner'
 import { formatAmount } from '../../../../helpers'
-import { clientsCollection as collection } from '../../../../environments'
+import { clientsCollection as collection, envCollection } from '../../../../environments'
 
 class ClientDetails extends Component {
   constructor(props) {
@@ -18,6 +18,11 @@ class ClientDetails extends Component {
       showBalanceUpdate: false,
       balanceUpdateAmount: 0,
     }
+  }
+
+  componentWillMount() {
+    const { firestore } = this.props
+    firestore.get(envCollection)
   }
 
   handleUpdateBalance = (event) => {
@@ -61,11 +66,27 @@ class ClientDetails extends Component {
       .then(() => history.push('/'))
   }
 
+  renderBtnEdit() {
+    const { settings } = this.props
+
+    if (settings.disableBalanceOnEdit) {
+      return null
+    }
+
+    return (
+      <small className="ml-1">
+        <a href="#!" onClick={this.handleUpdateBalance}>
+          <i className="fa fa-pencil" />
+        </a>
+      </small>
+    )
+  }
+
   renderBalanceForm() {
     const { showBalanceUpdate } = this.state
-    const { client } = this.props
+    const { client, settings } = this.props
 
-    if (!showBalanceUpdate) {
+    if (!(showBalanceUpdate && !settings.disableBalanceOnEdit)) {
       return null
     }
 
@@ -93,9 +114,9 @@ class ClientDetails extends Component {
   }
 
   render() {
-    const { client } = this.props
+    const { client, settings } = this.props
 
-    if (!client) {
+    if (!(client && settings)) {
       return <Spinner />
     }
 
@@ -138,12 +159,7 @@ class ClientDetails extends Component {
                     'text-danger': balance > 0,
                     'text-success': 0 === balance,
                   })}>{formatAmount(balance)}</span>
-
-                  <small className="ml-1">
-                    <a href="#!" onClick={this.handleUpdateBalance}>
-                      <i className="fa fa-pencil" />
-                    </a>
-                  </small>
+                  {this.renderBtnEdit()}
                 </h3>
                 {this.renderBalanceForm()}
               </div>
@@ -168,6 +184,7 @@ class ClientDetails extends Component {
 
 ClientDetails.propTypes = {
   firestore: PropTypes.object.isRequired,
+  settings: PropTypes.object,
   client: PropTypes.shape({
     id: PropTypes.string,
     firstName: PropTypes.string,
@@ -184,7 +201,8 @@ export default compose(
     storeAs: 'client',
     doc: params.id,
   }]),
-  connect(({ firestore: { ordered } }) => ({
+  connect(({ firestore: { data, ordered } }) => ({
     client: ordered.client && ordered.client[0],
+    settings: data.env && data.env.settings,
   }))
 )(ClientDetails)

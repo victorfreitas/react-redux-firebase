@@ -1,65 +1,77 @@
 import React, { Component } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { firebaseConnect } from 'react-redux-firebase'
+import { firebaseConnect, firestoreConnect } from 'react-redux-firebase'
 import PropTypes from 'prop-types'
 
-import './style.css'
-
-import Alert from '../../layout/Alert'
 import Spinner from '../../layout/Spinner'
+import Alert from '../../layout/Alert'
 
 import { setNotify } from '../../../actions'
+import { envCollection as collection } from '../../../environments'
 
-class Login extends Component {
+class Register extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
+      isWait: false,
       email: '',
       password: '',
-      wait: false,
     }
   }
 
-  handleChange = ({ target }) => {
-    this.setState({ [target.name]: target.value })
+  async componentWillMount() {
+    const { firestore, history } = this.props
+    const doc = await firestore.get({ collection, doc: 'settings' })
+
+    if (!doc.data || !doc.data().allowRegistration) {
+      history.push('/')
+    }
+  }
+
+  handleChange = ({ target: { name, value } }) => {
+    const { setNotify } = this.props
+
+    setNotify({ message: '', messageType: '' })
+    this.setState({ [name]: value })
   }
 
   handleSubmit = (event) => {
+    const { email, password } = this.state
+    const { setNotify, firebase } = this.props
+
     event.preventDefault()
 
-    const { firebase, history, setNotify } = this.props
-    const { email, password } = this.state
+    if (!email.trim()) {
+      setNotify({ message: 'Email is required', messageType: 'danger' })
+      return
+    }
+
+    if (!password.trim()) {
+      setNotify({ message: 'Passowrd is required', messageType: 'danger' })
+      return
+    }
 
     this.setState({ isWait: true })
-
     firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => {
-        this.setState({ isWait: false })
-        setNotify({ message: null, messageType: null })
-        history.push('/')
-      })
+      .createUser({ email, password })
       .catch(err => {
         this.setState({ isWait: false })
-        setNotify({
-          message: err.message,
-          messageType: 'danger',
-        })
+        setNotify({ message: err.message, messageType: 'danger' })
       })
   }
 
-  renderNotify() {
+  renderMessages() {
     const { notify } = this.props
     return <Alert {...notify} />
   }
 
   render() {
-    const { email, password, isWait } = this.state
+    const { isWait, email, password } = this.state
+    const { settings } = this.props
 
-    if (isWait) {
+    if (isWait || !settings) {
       return <Spinner />
     }
 
@@ -70,11 +82,11 @@ class Login extends Component {
             <div className="card-body">
               <h1 className="text-center pb-4 pt-3">
                 <span className="text-primary">
-                  <i className="fa fa-lock" /> Login
+                  <i className="fa fa-user" /> Register
                 </span>
               </h1>
 
-              {this.renderNotify()}
+              {this.renderMessages()}
 
               <form onSubmit={this.handleSubmit}>
                 <div className="form-group">
@@ -113,8 +125,9 @@ class Login extends Component {
                     />
                   </div>
                 </div>
-
-                <input type="submit" className="btn btn-primary btn-block" value="Login" />
+                <button className="btn btn-primary btn-block">
+                  Register
+                </button>
               </form>
             </div>
           </div>
@@ -124,14 +137,16 @@ class Login extends Component {
   }
 }
 
-Login.propTypes = {
+Register.propTypes = {
   firebase: PropTypes.object.isRequired,
-  setNotify: PropTypes.func.isRequired,
   notify: PropTypes.object.isRequired,
+  setNotify: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
 }
 
-const mapStateToProps = state => ({
-  notify: state.notify,
+const mapStateToProps = ({ notify, firestore }) => ({
+  notify,
+  settings: firestore.data.env && firestore.data.env.settings,
 })
 
 const mapDispatchToProps = {
@@ -140,5 +155,6 @@ const mapDispatchToProps = {
 
 export default compose(
   firebaseConnect(),
+  firestoreConnect(),
   connect(mapStateToProps, mapDispatchToProps)
-)(Login)
+)(Register)

@@ -6,13 +6,21 @@ import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
 import PropTypes from 'prop-types'
 
-import { clientsCollection as collection } from '../../../../environments'
+import { clientsCollection as collection, envCollection } from '../../../../environments'
 import Spinner from '../../../layout/Spinner'
 
 class EditClient extends Component {
   constructor(props) {
     super(props)
-    this.state = {}
+
+    this.state = {
+      isWait: false,
+    }
+  }
+
+  componentWillMount() {
+    const { firestore } = this.props
+    firestore.get(envCollection)
   }
 
   handleChange = ({ target }) => {
@@ -20,7 +28,16 @@ class EditClient extends Component {
   }
 
   renderFormGroup(name, label, type = 'text', step = null) {
-    const { client } = this.props
+    const { client, settings } = this.props
+
+    if ('balance' === name && settings.disableBalanceOnEdit) {
+      return (
+        <div className="form-group">
+          <label>{label}</label>
+          <input className="form-control" value={client[name]} placeholder="Balance is disabled" readOnly />
+        </div>
+      )
+    }
 
     return (
       <div className="form-group">
@@ -43,6 +60,8 @@ class EditClient extends Component {
   handleSubmit = (event) => {
     event.preventDefault()
 
+    this.setState({ isWait: true })
+
     const { client, firestore, history } = this.props
     const newClient = { ...client, ...this.state }
 
@@ -60,9 +79,10 @@ class EditClient extends Component {
   }
 
   render() {
-    const { client } = this.props
+    const { client, settings } = this.props
+    const { isWait } = this.state
 
-    if (!client) {
+    if (!(client && settings) || isWait) {
       return <Spinner />
     }
 
@@ -103,6 +123,7 @@ class EditClient extends Component {
 
 EditClient.propTypes = {
   firestore: PropTypes.object.isRequired,
+  settings: PropTypes.object,
   client: PropTypes.shape({
     id: PropTypes.string,
     firstName: PropTypes.string,
@@ -119,7 +140,8 @@ export default compose(
     storeAs: 'client',
     doc: params.id,
   }]),
-  connect(({ firestore: { ordered } }) => ({
+  connect(({ firestore: { data, ordered } }) => ({
     client: ordered.client && ordered.client[0],
+    settings: data.env && data.env.settings,
   }))
 )(EditClient)

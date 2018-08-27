@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Clients from '../../Clients'
+import Clients from '../../pages/Clients'
 import Sidebar from '../Sidebar'
 
 const Dashboard = () => (

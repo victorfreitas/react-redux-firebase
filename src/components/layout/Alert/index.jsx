@@ -1,18 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const Alert = ({ message, messageType }) => (
-  <div className={`alert alert-${messageType}`}>
-    {message}
-  </div>
-)
+const Alert = ({ message, messageType }) => {
+  if (!message) {
+    return null
+  }
+
+  return (
+    <div className={`alert alert-${messageType}`}>
+      {message}
+    </div>
+  )
+}
 
 Alert.defaultProps = {
-  type: 'success',
+  message: '',
+  messageType: 'success',
 }
 
 Alert.propTypes = {
-  message: PropTypes.string.isRequired,
+  message: PropTypes.string,
   messageType: PropTypes.string,
 }
 

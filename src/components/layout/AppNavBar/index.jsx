@@ -1,13 +1,20 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { firebaseConnect } from 'react-redux-firebase'
+import { firebaseConnect, firestoreConnect } from 'react-redux-firebase'
 
 import './style.css'
 
+import { envCollection as collection } from '../../../environments'
+
 class AppNavBar extends Component {
+  componentWillMount() {
+    const { firestore } = this.props
+    firestore.get(collection)
+  }
+
   handleLogout = (event) => {
     event.preventDefault()
 
@@ -23,11 +30,16 @@ class AppNavBar extends Component {
     }
 
     return (
-      <div className="collapse navbar-collapse" id="navbar-main">
+      <Fragment>
         <ul className="navbar-nav mr-auto">
           <li className="nav-item">
             <Link to="/" className="nav-link">
               Dashboard
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/client/add" className="nav-link">
+              Add New
             </Link>
           </li>
         </ul>
@@ -48,7 +60,30 @@ class AppNavBar extends Component {
             </a>
           </li>
         </ul>
-      </div>
+      </Fragment>
+    )
+  }
+
+  renderNavItemsWithoutLogin() {
+    const { settings, auth } = this.props
+
+    if (!settings.allowRegistration || auth.uid) {
+      return null
+    }
+
+    return (
+      <ul className="navbar-nav ml-auto">
+        <li className="nav-item">
+          <Link to="/login" className="nav-link">
+            Login
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link to="/register" className="nav-link">
+            Register
+          </Link>
+        </li>
+      </ul>
     )
   }
 
@@ -67,19 +102,31 @@ class AppNavBar extends Component {
           >
             <span className="navbar-toggler-icon" />
           </button>
-          {this.renderNavItems()}
+          <div className="collapse navbar-collapse" id="navbar-main">
+            {this.renderNavItems()}
+            {this.renderNavItemsWithoutLogin()}
+          </div>
         </div>
       </nav>
     )
   }
 }
 
+AppNavBar.defaultProps = {
+  settings: {},
+}
+
 AppNavBar.propTypes = {
   firebase: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
+  settings: PropTypes.object.isRequired,
 }
 
 export default compose(
   firebaseConnect(),
-  connect(state => ({ auth: state.firebase.auth }))
+  firestoreConnect(),
+  connect(({ firebase, firestore }) => ({
+    auth: firebase.auth,
+    settings: firestore.data.env && firestore.data.env.settings,
+  }))
 )(AppNavBar)
