@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 
+import { UserIsAuthenticated, UserIsNotAuthenticated } from '../../helpers/auth'
 import Login from '../auth/Login'
 import Register from '../auth/Register'
 import Dashboard from '../layout/Dashboard'
@@ -10,23 +11,25 @@ import EditClient from '../pages/Clients/EditClient'
 import Settings from '../pages/Settings'
 import NotFound from '../pages/NotFound'
 
-import { UserIsAuthenticated, UserIsNotAuthenticated } from '../../helpers/auth'
+const routes = [
+  { key: '1', path: '/', component: UserIsAuthenticated(Dashboard) },
+  { key: '2', path: '/client/add', component: UserIsAuthenticated(AddClient) },
+  { key: '3', path: '/client/:id', component: UserIsAuthenticated(ClientDetails) },
+  { key: '4', path: '/client/edit/:id', component: UserIsAuthenticated(EditClient) },
+  { key: '5', path: '/login', component: UserIsNotAuthenticated(Login) },
+  { key: '6', path: '/register', component: UserIsNotAuthenticated(Register) },
+  { key: '7', path: '/settings', component: UserIsAuthenticated(Settings) },
+  { key: '8', path: '*', component: UserIsAuthenticated(NotFound) },
+]
 
-const Routes = () => {
-  return (
-    <div className="container">
-      <Switch>
-        <Route exact path="/" component={UserIsAuthenticated(Dashboard)} />
-        <Route exact path="/client/add" component={UserIsAuthenticated(AddClient)} />
-        <Route exact path="/client/:id" component={UserIsAuthenticated(ClientDetails)} />
-        <Route exact path="/client/edit/:id" component={UserIsAuthenticated(EditClient)} />
-        <Route exact path="/login" component={UserIsNotAuthenticated(Login)} />
-        <Route exact path="/register" component={UserIsNotAuthenticated(Register)} />
-        <Route exact path="/settings" component={UserIsAuthenticated(Settings)} />
-        <Route path="*" component={UserIsAuthenticated(NotFound)} />
-      </Switch>
-    </div>
-  )
-}
+const Routes = () => (
+  <div className="container">
+    <Switch>
+      {routes.map(route => (
+        <Route exact { ...route } />
+      ))}
+    </Switch>
+  </div>
+)
 
 export default Routes
