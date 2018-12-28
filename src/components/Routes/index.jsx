@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 
 import { UserIsAuthenticated, UserIsNotAuthenticated } from '../../helpers/auth'
 import Login from '../auth/Login'

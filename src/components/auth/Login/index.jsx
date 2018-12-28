@@ -12,14 +12,10 @@ import Spinner from '../../layout/Spinner'
 import { setNotify } from '../../../actions'
 
 class Login extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      email: '',
-      password: '',
-      wait: false,
-    }
+  state = {
+    email: '',
+    password: '',
+    wait: false,
   }
 
   handleChange = ({ target }) => {
