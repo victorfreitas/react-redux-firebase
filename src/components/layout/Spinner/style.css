@@ -1,5 +1,30 @@
-.spinner img {
-  display: block;
-  margin: auto;
-  width: 120px;
+@keyframes spinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner:before {
+  animation: spinner .5s linear infinite;
+  background-color: transparent;
+  border-bottom-color: #007bff;
+  border-left-color: #fff;
+  border-radius: 50%;
+  border-right-color: #fff;
+  border-style: solid;
+  border-top-color: #007bff;
+  border-width: 3px;
+  content: '';
+  height: 60px;
+  width: 60px;
+}
+
+.spinner {
+  align-items: center;
+  display: flex;
+  height: calc(100vh - 200px);
+  justify-content: center;
 }
