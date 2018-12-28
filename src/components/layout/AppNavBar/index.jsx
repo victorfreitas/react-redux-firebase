@@ -45,9 +45,9 @@ class AppNavBar extends Component {
         </ul>
         <ul className="navbar-nav ml-auto">
           <li className="nav-item">
-            <a className="nav-link">
+            <span className="nav-link">
               {auth.email}
-            </a>
+            </span>
           </li>
           <li className="nav-item">
             <Link to="/settings" className="nav-link">
@@ -55,9 +55,9 @@ class AppNavBar extends Component {
             </Link>
           </li>
           <li className="nav-item">
-            <a className="nav-link logout-link" onClick={this.handleLogout}>
+            <span className="nav-link logout-link" onClick={this.handleLogout}>
               Logout
-            </a>
+            </span>
           </li>
         </ul>
       </Fragment>

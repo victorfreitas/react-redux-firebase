@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 
 import './style.css'
 
@@ -6,4 +6,4 @@ const Spinner = () => (
   <div className="spinner" />
 )
 
-export default Spinner
+export default memo(Spinner)
