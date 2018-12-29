@@ -89,10 +89,10 @@ class AppNavBar extends Component {
 
   render() {
     return (
-      <nav className="navbar navbar-expand-md navbar-dark bg-primary mb-4">
+      <nav className="navbar navbar-expand-md navbar-dark bg-dark mb-4">
         <div className="container">
           <Link to="/" className="navbar-brand">
-            ClientPanel
+            Clients
           </Link>
           <button
             type="button"

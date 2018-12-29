@@ -59,8 +59,8 @@ class Clients extends Component {
       <Fragment>
         <div className="row">
           <div className="col-md-6">
-            <h2>
-              <i className="fa fa-users" /> Clients
+            <h2 className="text-left">
+              <i className="fa fa-users" /> List
             </h2>
           </div>
           <div className="col-md-6">
