@@ -13,9 +13,10 @@ import { envCollection as collection } from '../../../environments'
 class Settings extends Component {
   handleChange = ({ target: { name, checked } }) => {
     const { firestore, env: { settings } } = this.props
+    const doc = { ...settings }
 
-    settings[name] = checked
-    firestore.update({ collection, doc: 'settings' }, settings)
+    doc[name] = checked
+    firestore.update({ collection, doc: 'settings' }, doc)
   }
 
   render() {
