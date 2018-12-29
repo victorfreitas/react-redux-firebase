@@ -2,15 +2,15 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { firebaseConnect } from 'react-redux-firebase'
 
-import { setNotify } from '../../../actions'
+import { setNotifyUser } from '../../../actions'
 import Login from '../../../components/auth/Login'
 
 const mapStateToProps = state => ({
-  notify: state.notify,
+  notifyUser: state.notifyUser,
 })
 
 const mapDispatchToProps = {
-  setNotify,
+  setNotifyUser,
 }
 
 export default compose(

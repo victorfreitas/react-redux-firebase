@@ -20,12 +20,12 @@ class Login extends LoginComponent {
 
   render() {
     const { isWait, email, password } = this.state
-    const { notify } = this.props
+    const { notifyUser } = this.props
 
     return (
       <Content
         isWait={isWait}
-        notify={notify}
+        notify={notifyUser}
         email={email}
         password={password}
         handleSubmit={this.handleSubmit}

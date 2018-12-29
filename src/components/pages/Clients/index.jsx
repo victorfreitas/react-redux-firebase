@@ -93,6 +93,9 @@ Clients.propTypes = {
 }
 
 export default compose(
-  firestoreConnect(['clients']),
+  firestoreConnect([{
+    collection: 'clients',
+    orderBy: ['createdAt', 'desc'],
+  }]),
   connect(state => ({ clients: state.firestore.ordered.clients }))
 )(Clients)

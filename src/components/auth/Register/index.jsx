@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import Spinner from '../../layout/Spinner'
 import Alert from '../../layout/Alert'
 
-import { setNotify } from '../../../actions'
+import { setNotifyUser } from '../../../actions'
 import { envCollection as collection } from '../../../environments'
 
 class Register extends Component {
@@ -31,25 +31,25 @@ class Register extends Component {
   }
 
   handleChange = ({ target: { name, value } }) => {
-    const { setNotify } = this.props
+    const { setNotifyUser } = this.props
 
-    setNotify({ message: '', messageType: '' })
+    setNotifyUser({ message: '', messageType: '' })
     this.setState({ [name]: value })
   }
 
   handleSubmit = (event) => {
     const { email, password } = this.state
-    const { setNotify, firebase } = this.props
+    const { setNotifyUser, firebase } = this.props
 
     event.preventDefault()
 
     if (!email.trim()) {
-      setNotify({ message: 'Email is required', messageType: 'danger' })
+      setNotifyUser({ message: 'Email is required', messageType: 'danger' })
       return
     }
 
     if (!password.trim()) {
-      setNotify({ message: 'Passowrd is required', messageType: 'danger' })
+      setNotifyUser({ message: 'Passowrd is required', messageType: 'danger' })
       return
     }
 
@@ -58,13 +58,14 @@ class Register extends Component {
       .createUser({ email, password })
       .catch(err => {
         this.setState({ isWait: false })
-        setNotify({ message: err.message, messageType: 'danger' })
+        setNotifyUser({ message: err.message, messageType: 'danger' })
       })
   }
 
   renderMessages() {
-    const { notify } = this.props
-    return <Alert {...notify} />
+    const { notifyUser } = this.props
+
+    return <Alert { ...notifyUser } />
   }
 
   render() {
@@ -139,18 +140,18 @@ class Register extends Component {
 
 Register.propTypes = {
   firebase: PropTypes.object.isRequired,
-  notify: PropTypes.object.isRequired,
-  setNotify: PropTypes.func.isRequired,
+  notifyUser: PropTypes.object.isRequired,
+  setNotifyUser: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
 }
 
-const mapStateToProps = ({ notify, firestore }) => ({
-  notify,
+const mapStateToProps = ({ notifyUser, firestore }) => ({
+  notifyUser,
   settings: firestore.data.env && firestore.data.env.settings,
 })
 
 const mapDispatchToProps = {
-  setNotify,
+  setNotifyUser,
 }
 
 export default compose(

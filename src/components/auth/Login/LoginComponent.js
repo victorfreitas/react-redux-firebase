@@ -12,28 +12,28 @@ class LoginComponent extends Component {
     this.setState({ [target.name]: target.value })
   }
 
-  setNotify = (message = '', messageType = '') => {
-    const { setNotify } = this.props
+  setNotifyUser = (message = '', messageType = '') => {
+    const { setNotifyUser } = this.props
 
-    setNotify({ message, messageType })
+    setNotifyUser({ message, messageType })
   }
 
   onSuccess = () => {
     this.setState({ isWait: false })
-    this.setNotify()
+    this.setNotifyUser()
   }
 
   onError = ({ message }) => {
     this.setState({ isWait: false })
-    this.setNotify(message, 'danger')
-    setTimeout(this.setNotify, 3000)
+    this.setNotifyUser(message, 'danger')
+    setTimeout(this.setNotifyUser, 3000)
   }
 }
 
 LoginComponent.propTypes = {
   firebase: PropTypes.object.isRequired,
-  setNotify: PropTypes.func.isRequired,
-  notify: PropTypes.object.isRequired,
+  setNotifyUser: PropTypes.func.isRequired,
+  notifyUser: PropTypes.object.isRequired,
 }
 
 export default LoginComponent

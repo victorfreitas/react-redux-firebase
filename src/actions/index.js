@@ -1,5 +1,5 @@
-import setNotify from './setNotify'
+import setNotifyUser from './setNotifyUser'
 
 export {
-  setNotify,
+  setNotifyUser,
 }
