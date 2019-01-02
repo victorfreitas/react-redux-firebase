@@ -3,3 +3,7 @@ export const formatAmount = amount => new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
 }).format(amount)
+
+export const sumTotalOwed = clients => clients.reduce((total, client) => (
+  total + parseFloat(client.balance)
+), 0)
