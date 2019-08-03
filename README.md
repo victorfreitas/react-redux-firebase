@@ -11,7 +11,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 * Create a file to add your service account keys, see example below.
 
 ```markdown
-$ touch config/serviceAccount.json
+$ touch src/config/serviceAccount.json
 ```
 
 * Add you configurations to this file create above, see example this configuration below.
