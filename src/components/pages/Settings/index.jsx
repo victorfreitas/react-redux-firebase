@@ -8,19 +8,21 @@ import { firestoreConnect } from 'react-redux-firebase'
 import './style.css'
 
 import Spinner from '../../layout/Spinner'
-import { envCollection as collection } from '../../../environments'
+import { collections } from '../../../environments'
+
+const { CONFIG } = collections
 
 class Settings extends Component {
   handleChange = ({ target: { name, checked } }) => {
-    const { firestore, env: { settings } } = this.props
+    const { firestore, config: { settings } } = this.props
     const doc = { ...settings }
 
     doc[name] = checked
-    firestore.update({ collection, doc: 'settings' }, doc)
+    firestore.update({ collection: CONFIG, doc: 'settings' }, doc)
   }
 
   render() {
-    const { env: { settings } } = this.props
+    const { config: { settings } } = this.props
 
     if (!settings) {
       return <Spinner />
@@ -89,21 +91,21 @@ class Settings extends Component {
 }
 
 Settings.defaultProps = {
-  env: { settings: null }
+  config: { settings: null }
 }
 
 Settings.propTypes = {
   auth: PropTypes.object.isRequired,
   firestore: PropTypes.object.isRequired,
-  env: PropTypes.object.isRequired,
+  config: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = state => ({
   auth: state.firebase.auth,
-  env: state.firestore.data.env,
+  config: state.firestore.data[CONFIG],
 })
 
 export default compose(
-  firestoreConnect([collection]),
+  firestoreConnect([CONFIG]),
   connect(mapStateToProps)
 )(Settings)

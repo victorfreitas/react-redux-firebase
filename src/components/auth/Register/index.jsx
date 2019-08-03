@@ -8,7 +8,9 @@ import Spinner from '../../layout/Spinner'
 import Alert from '../../layout/Alert'
 
 import { setNotifyUser } from '../../../actions'
-import { envCollection as collection } from '../../../environments'
+import { collections } from '../../../environments'
+
+const { CONFIG } = collections
 
 class Register extends Component {
   constructor(props) {
@@ -23,7 +25,7 @@ class Register extends Component {
 
   async componentWillMount() {
     const { firestore, history } = this.props
-    const doc = await firestore.get({ collection, doc: 'settings' })
+    const doc = await firestore.get({ collection: CONFIG, doc: 'settings' })
 
     if (!doc.data || !doc.data().allowRegistration) {
       history.push('/')
@@ -147,7 +149,7 @@ Register.propTypes = {
 
 const mapStateToProps = ({ notifyUser, firestore }) => ({
   notifyUser,
-  settings: firestore.data.env && firestore.data.env.settings,
+  settings: firestore.data[CONFIG] && firestore.data[CONFIG].settings,
 })
 
 const mapDispatchToProps = {

@@ -1,2 +1,4 @@
-export const clientsCollection = 'clients'
-export const envCollection = 'env'
+export const collections = {
+  CLIENTS: 'clients',
+  CONFIG: 'config',
+}

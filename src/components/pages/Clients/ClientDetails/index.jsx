@@ -8,7 +8,9 @@ import classNames from 'classnames'
 
 import Spinner from '../../../layout/Spinner'
 import { formatAmount } from '../../../../helpers'
-import { clientsCollection as collection, envCollection } from '../../../../environments'
+import { collections } from '../../../../environments'
+
+const { CONFIG, CLIENTS } = collections
 
 class ClientDetails extends Component {
   constructor(props) {
@@ -22,7 +24,7 @@ class ClientDetails extends Component {
 
   componentWillMount() {
     const { firestore } = this.props
-    firestore.get(envCollection)
+    firestore.get(CONFIG)
   }
 
   handleUpdateBalance = (event) => {
@@ -49,7 +51,7 @@ class ClientDetails extends Component {
       balance: parseFloat(balanceUpdateAmount),
     }
 
-    firestore.update({ collection, doc }, clientUpdate)
+    firestore.update({ collection: CLIENTS, doc }, clientUpdate)
     this.setState({
       showBalanceUpdate: false,
       balanceUpdateAmount: 0,
@@ -62,7 +64,7 @@ class ClientDetails extends Component {
     const { client, firestore, history } = this.props
 
     firestore
-      .delete({ collection, doc: client.id })
+      .delete({ collection: CLIENTS, doc: client.id })
       .then(() => history.push('/'))
   }
 
@@ -197,12 +199,12 @@ ClientDetails.propTypes = {
 
 export default compose(
   firestoreConnect(({ match: { params } }) => [{
-    collection,
+    collection: CLIENTS,
     storeAs: 'client',
     doc: params.id,
   }]),
   connect(({ firestore: { data, ordered } }) => ({
     client: ordered.client && ordered.client[0],
-    settings: data.env && data.env.settings,
+    settings: data[CONFIG] && data[CONFIG].settings,
   }))
 )(ClientDetails)

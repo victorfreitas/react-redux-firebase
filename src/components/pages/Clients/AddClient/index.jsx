@@ -6,7 +6,9 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 
 import Spinner from '../../../layout/Spinner'
-import { clientsCollection as collection } from '../../../../environments'
+import { collections } from '../../../../environments'
+
+const { CONFIG, CLIENTS } = collections
 
 class AddClient extends Component {
   constructor(props) {
@@ -39,7 +41,7 @@ class AddClient extends Component {
     newClient.createdAt = firestore.FieldValue.serverTimestamp()
 
     firestore
-      .add({ collection }, newClient)
+      .add({ collection: CLIENTS }, newClient)
       .then(() => history.push('/'))
   }
 
@@ -76,7 +78,7 @@ class AddClient extends Component {
 
   componentWillMount() {
     const { firestore } = this.props
-    firestore.get('env')
+    firestore.get(CONFIG)
   }
 
   render() {
@@ -133,6 +135,6 @@ AddClient.propTypes = {
 export default compose(
   firestoreConnect(),
   connect(({ firestore: { data } }) => ({
-    settings: data.env && data.env.settings,
+    settings: data[CONFIG] && data[CONFIG].settings,
   }))
 )(AddClient)

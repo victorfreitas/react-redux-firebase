@@ -6,8 +6,10 @@ import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
 import PropTypes from 'prop-types'
 
-import { clientsCollection as collection, envCollection } from '../../../../environments'
+import { collections } from '../../../../environments'
 import Spinner from '../../../layout/Spinner'
+
+const { CONFIG, CLIENTS } = collections
 
 class EditClient extends Component {
   constructor(props) {
@@ -20,7 +22,7 @@ class EditClient extends Component {
 
   componentWillMount() {
     const { firestore } = this.props
-    firestore.get(envCollection)
+    firestore.get(CONFIG)
   }
 
   handleChange = ({ target }) => {
@@ -74,7 +76,7 @@ class EditClient extends Component {
     newClient.balance = parseFloat(newClient.balance)
 
     firestore
-      .update({ collection, doc: client.id }, newClient)
+      .update({ collection: CLIENTS, doc: client.id }, newClient)
       .then(() => history.push('/'))
   }
 
@@ -136,12 +138,12 @@ EditClient.propTypes = {
 
 export default compose(
   firestoreConnect(({ match: { params } }) => [{
-    collection,
+    collection: CLIENTS,
     storeAs: 'client',
     doc: params.id,
   }]),
   connect(({ firestore: { data, ordered } }) => ({
     client: ordered.client && ordered.client[0],
-    settings: data.env && data.env.settings,
+    settings: data[CONFIG] && data[CONFIG].settings,
   }))
 )(EditClient)

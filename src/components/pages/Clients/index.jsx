@@ -7,6 +7,9 @@ import { sumTotalOwed } from '../../../helpers'
 import Spinner from '../../layout/Spinner'
 import ClientsContent from './ClientsContent'
 import clientsWithProps from './clientsWithProps'
+import { collections } from '../../../environments'
+
+const { CLIENTS } = collections
 
 class Clients extends Component {
   state = { totalOwed: 0 }
@@ -27,11 +30,11 @@ class Clients extends Component {
 
 export default compose(
   firestoreConnect([{
-    collection: 'clients',
+    collection: CLIENTS,
     orderBy: ['createdAt', 'desc'],
   }]),
   connect(({ firestore }) => ({
-    isLoaded: isLoaded(firestore.ordered.clients),
-    clients: firestore.ordered.clients,
+    isLoaded: isLoaded(firestore.ordered[CLIENTS]),
+    clients: firestore.ordered[CLIENTS],
   }))
 )(clientsWithProps(Clients))

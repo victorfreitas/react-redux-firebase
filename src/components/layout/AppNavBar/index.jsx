@@ -7,12 +7,14 @@ import { firebaseConnect, firestoreConnect } from 'react-redux-firebase'
 
 import './style.css'
 
-import { envCollection as collection } from '../../../environments'
+import { collections } from '../../../environments'
+
+const { CONFIG } = collections
 
 class AppNavBar extends Component {
   componentWillMount() {
     const { firestore } = this.props
-    firestore.get(collection)
+    firestore.get(CONFIG)
   }
 
   handleLogout = (event) => {
@@ -127,6 +129,6 @@ export default compose(
   firestoreConnect(),
   connect(({ firebase, firestore }) => ({
     auth: firebase.auth,
-    settings: firestore.data.env && firestore.data.env.settings,
+    settings: firestore.data[CONFIG] && firestore.data[CONFIG].settings,
   }))
 )(AppNavBar)
