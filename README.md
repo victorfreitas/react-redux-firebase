@@ -1,1 +1,1 @@
-# react-firebase-client-panel
+# react-redux-firebase

@@ -1,5 +1,5 @@
 {
-  "name": "react-firebase-client-panel",
+  "name": "react-redux-firebase",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
