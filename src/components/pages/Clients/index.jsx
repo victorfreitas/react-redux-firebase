@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { firestoreConnect } from 'react-redux-firebase'
+import { firestoreConnect, isLoaded } from 'react-redux-firebase'
 
 import { sumTotalOwed } from '../../../helpers'
 import Spinner from '../../layout/Spinner'
@@ -16,10 +16,12 @@ class Clients extends Component {
   }
 
   render() {
-    const { isLoading, clients } = this.props
+    const { isLoaded, clients } = this.props
     const { totalOwed } = this.state
 
-    return isLoading ? <Spinner /> : <ClientsContent data={{ totalOwed, clients }} />
+    return isLoaded
+      ? <ClientsContent data={{ totalOwed, clients }} />
+      : <Spinner />
   }
 }
 
@@ -29,7 +31,7 @@ export default compose(
     orderBy: ['createdAt', 'desc'],
   }]),
   connect(({ firestore }) => ({
-    isLoading: firestore.status.requesting.clients,
+    isLoaded: isLoaded(firestore.ordered.clients),
     clients: firestore.ordered.clients,
   }))
 )(clientsWithProps(Clients))

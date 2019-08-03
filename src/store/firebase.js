@@ -5,8 +5,6 @@ import firebase from 'firebase/app'
 import serviceAccount from '../config/serviceAccount'
 
 firebase.initializeApp(serviceAccount)
-firebase
-  .firestore()
-  .settings({ timestampsInSnapshots: true })
+firebase.firestore().settings({})
 
 export default firebase
